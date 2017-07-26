@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ytu.icoding.dao.AttendanceDao">
+
+	<sql id="selectId">
+	id,
+	userId,
+	(select name from user where user.userId = attendance.userId) userName,
+	(select depName from (select user_id,depName from department d,user_dep ud where d.depId=ud.dep_id)t 
+	where t.user_id=attendance.userId) depName,
+	checkDate,
+	checkInTime,
+	checkOutTime,
+	checkInStatus,
+	checkOutStatus
+	</sql>
+	
+	<select id="selectAttendance" parameterType="java.util.HashMap" resultType="Attendance">
+		select <include refid="selectId"></include>
+		from attendance where 1=1 
+		<if test="userName != null and userName != ''">
+			and userId in (select userId from user where name like concat('%', #{userName}, '%') )
+		</if>
+		<if test="depName != null and depName != ''">
+			and userId in (select user_id from department d,user_dep ud where d.depId = ud.dep_id and d.depName = #{depName} )
+		</if>
+		<if test="date != null and date != ''">
+			and checkDate = #{date}
+		</if>
+		order by checkDate
+	</select>
+	
+	
+	<!-- 分页查询 -->
+	<select id="selectAttendanceByPage" parameterType="java.util.HashMap" resultType="Attendance">
+		select 
+		<include refid="selectId"/> 
+		from attendance
+		where 1=1
+		<if test="userName != null and userName != ''">
+			and userId in (select userId from user where name like concat('%', #{userName}, '%') )
+		</if>
+		<if test="depName != null and depName != ''">
+			and userId in (select user_id from department d,user_dep ud where d.depId = ud.dep_id and d.depName = #{depName} )
+		</if>
+		<if test="date != null and date != ''">
+			and checkDate = #{date}
+		</if>
+		order by checkDate
+		 limit #{beginIndex},#{pageSize}
+	</select>
+	
+	<insert id="insertCheckIn" parameterType="java.util.HashMap">
+		insert attendance(userId,checkDate,checkInTime,checkInStatus) values(
+		
+			#{userId},
+			curdate(),
+			#{checkInTime},
+			#{checkInStatus}
+		
+		)
+	</insert>
+	
+	<update id="updateCheckOut" parameterType="java.util.HashMap">
+	   
+	   update attendance set checkOutTime = #{checkOutTime},checkOutStatus =  #{checkOutStatus}
+	    where userId = #{userId} and checkDate = curdate()
+	</update>
+	
+	
+	<select id="selectAttendanceByUser" parameterType="int" resultType="Attendance" >
+		select <include refid="selectId"></include>
+		from attendance where userId = #{userId} and checkDate = curdate()
+	</select>
+	
+
+	<select id="selectAttendanceOrderByDep" resultType="Attendance">
+		select <include refid="selectId"></include>
+		from attendance ,user_dep u where attendance.userId = u.user_id order by u.dep_id,attendance.checkDate
+	
+	</select>
+	
+	
+	
+</mapper>

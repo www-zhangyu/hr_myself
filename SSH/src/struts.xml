@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+
+<struts>
+
+	<include file="struts-role.xml"></include>
+	<!-- 考勤管理 -->
+	<include file="struts-attendance.xml"></include>
+	
+	<include file="struts-department.xml"></include>
+	<!-- 薪资管理 -->
+	<include file="struts-wage.xml"></include>
+	
+   <package name="user" extends="json-default" namespace="/user">
+		<!-- 用户登录 -->
+		<action name="login" class="ytu.icoding.action.UserAction" method="login">
+			<result type="redirect">/mainframe.jsp</result>
+			<result name="fail">/login.jsp</result>
+		</action>
+		
+		<!-- 退出 -->
+		<action name="logout" class="ytu.icoding.action.UserAction" method="logout">
+			<result>/login.jsp</result>
+		</action>
+		
+		
+		<!-- 修改密码 -->
+		<action name="changePwd" class="ytu.icoding.action.UserAction" method="changePwd">
+			<!-- <result name="success" >
+				<param name="root">result</param>
+			</result> -->
+		</action>
+		
+		
+		<!-- 转到用户管理界面 -->
+		<action name="listAllUser" class="ytu.icoding.action.UserAction" method="listAllUser">
+		</action>
+		
+		<!-- 获取当前用户所有的资源 -->
+		<action name="getUserResources" class="ytu.icoding.action.UserAction" method="getUserResources"></action>
+		
+		<action name="addUser" class="ytu.icoding.action.UserAction" method="addUser">
+			<result>/jsp/user/listUser.jsp</result>
+		</action>
+		
+		<!-- 删除用户 -->
+		<action name="deleteSelectedUsers" class="ytu.icoding.action.UserAction" method="deleteSelectedUsers"></action>
+		
+		<!-- 修改用户信息 -->
+		<action name="updateUser" class="ytu.icoding.action.UserAction" method="updateUser">
+			<result>/jsp/user/listUser.jsp</result>
+		</action>
+		
+	</package>
+	
+	<package name="resources" extends="json-default" namespace="/resources">
+		<!-- 权限 -->
+		<action name="resources" class="ytu.icoding.action.ResourcesAction" method="resources">
+		</action>
+		<!-- 权限列表 -->
+		<action name="listResources" class="ytu.icoding.action.ResourcesAction" method="listResources">
+			<result>/jsp/resources/listResources.jsp</result>
+		</action>
+		
+		<!-- 删除权限 -->
+		<action name="deleteOneResources" class="ytu.icoding.action.ResourcesAction" method="deleteOneResources">
+		</action>
+		
+		<action name="deleteSelectedResources" class="ytu.icoding.action.ResourcesAction" method="deleteSelectedResources"></action>
+		
+		
+		<!-- 更新 -->
+		<action name="updateResources" class="ytu.icoding.action.ResourcesAction" method="updateResources">
+			<result>/jsp/resources/listResources.jsp</result>
+		</action>
+		
+		<!-- 添加 -->
+		<action name="addResources" class="ytu.icoding.action.ResourcesAction" method="addResources">
+			<result>/jsp/resources/listResources.jsp</result>
+		</action>
+		
+		
+	</package>
+	<!-- 时间 -->
+	<package name="sysdate" extends="json-default" namespace="/sysDate">
+		<action name="getDate" class="ytu.icoding.action.UserAction" method="getSystemTime">
+			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+	</package>
+
+</struts>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="ytu.icoding.dao.UserDao">
+
+	<sql id="selectId">
+		userId,
+		name,
+		password,
+		(select r.name from role r where id in (SELECT ur.role_id FROM user_role ur
+		WHERE ur.user_id=user.userId)) roleName,
+		userAge,
+		userSex,
+		userPhone,
+		userMail,
+		bankName,
+		bankAccountName,
+		bankAccount,
+		changePwdDate,
+		(select d.depName from department d where depId = (select ud.dep_id from user_dep ud 
+		where user.userId=ud.user_id)) depName,
+		(select p.posName from position p where posId = (select up.pos_id from user_pos up 
+		where user.userId = up.user_id)) posName,
+		shouldWage,
+		hireDate
+	</sql>
+	
+	<!-- 根据用户名查出userId -->
+	<select id="getUserByName" parameterType="String" resultType="User">
+	  select
+	  <include refid="selectId"/>
+	  from user where name=#{name}
+	</select>
+	
+	
+	
+	<select id="getUserResources" parameterType="java.util.HashMap" resultType="String">
+		select distinct res.resKey from resources res,resources_role resr 
+		where 1=1  and res.id=resr.resources_id
+		<if test="roleName !='超级管理员' ">
+			 and resr.role_id=
+			(select ur.role_id from user u,user_role ur 
+			where u.userid=ur.user_id and u.userid=#{id})
+		</if>
+		
+	</select>
+	
+	<update id="changePwd" parameterType="java.util.HashMap">
+		update user set password=#{password,jdbcType=VARCHAR},
+						changePwdDate=curdate() 
+		where userId=#{id};
+	</update>
+	
+	<select id="listAllUser" resultType="User" parameterType="String">
+		select <include refid="selectId"/> from user 
+		where 1=1
+		<!-- <if test="name != null and t.name != ''">
+			and	name like '%${t.name}%'
+		</if> -->
+	</select>
+	
+	<select id="listUserByName" resultType="User" parameterType="String">
+	
+		<!-- 避免sql注入问题 -->
+		select <include refid="selectId"/> from user where name like concat('%', #{name}, '%')
+	</select>
+	
+	<select id="listUserPage" parameterType="java.util.HashMap" resultType="User">
+		select 
+		<include refid="selectId"/> 
+		from user
+		where 1=1
+		<if test="name != null and name != ''">
+			and name like concat('%', #{name}, '%')
+		</if>
+		 limit #{beginIndex},#{pageSize}
+	</select>
+	
+	<insert id="addUser" parameterType="java.util.HashMap">
+		insert user(name,password,userAge,userSex,userPhone,userMail,bankAccount,shouldWage,hireDate) 
+		
+		values(#{name},#{password},#{age},#{sex},#{phone},#{mail},#{account},#{shouldWage},#{hireDate})
+	</insert>
+	
+	
+	<select id="maxId" resultType="int">
+		select max(userId) from user
+	</select>
+	
+	
+	<insert id="addUserDep" parameterType="java.util.HashMap">
+		insert user_dep(user_id,dep_id) values(#{userId},#{depId})
+	
+	</insert>
+	
+	<delete id="deleteUser" parameterType="int">
+		delete from user where userId=#{id}
+	</delete>
+	
+	
+	<update id="updateUser" parameterType="java.util.HashMap">
+		update user
+	    set
+	    	userAge = #{age,jdbcType=NUMBER},
+			userSex = #{sex,jdbcType=VARCHAR},
+			userPhone = #{phone,jdbcType=VARCHAR},
+			userMail = #{mail,jdbcType=VARCHAR},
+			bankAccount = #{account,jdbcType=VARCHAR}
+	   where userId = #{id}
+	</update>
+	
+	
+	<!-- 查询考勤表中没有签到的用户 -->
+	<select id="selectNotCheckInUser" parameterType="String" resultType="User">
+		select <include refid="selectId"/>  from user where userId not in (select userId from attendance where checkDate = curdate())
+	</select>
+	
+	
+	<!-- 查询考勤表中迟到的用户 -->
+	<select id="selectLateUser" resultType="User">
+		select <include refid="selectId"/> from user where userId = (select userId from attendance where checkInStatus = 2 and checkDate = curdate())
+	</select>
+	
+	<!-- 查询考勤表中迟到时间超过1小时的用户 -->
+	<select id="selectAbsentUser" resultType="User">
+		select <include refid="selectId"/> from user where userId = (select userId from attendance where checkInStatus = 3 and checkDate = curdate())
+	</select>	
+</mapper>

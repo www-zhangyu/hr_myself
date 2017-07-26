@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+    
+    
+<struts>
+
+	<package name="department" extends="json-default" namespace="/department">
+	
+		<action name="selectAllDepartment" class="ytu.icoding.action.DepartmentAction" method="selectAllDepartment">
+			
+		</action>
+	</package>
+
+</struts>

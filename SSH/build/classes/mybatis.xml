@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+	
+
+<configuration>
+	<typeAliases>
+	<!-- 给实体Bean一个别名-->
+		<typeAlias type="ytu.icoding.entity.User" alias="User" />
+		<typeAlias type="ytu.icoding.entity.Resources" alias="Resources"/>
+		<typeAlias type="ytu.icoding.entity.Department" alias="Department"/>
+		<typeAlias type="ytu.icoding.entity.Role" alias="Role"/>
+		<typeAlias type="ytu.icoding.entity.Attendance" alias="Attendance"/>
+		<typeAlias type="ytu.icoding.entity.BonusPenalty" alias="BonusPenalty"/>
+		<typeAlias type="ytu.icoding.entity.Leave" alias="Leave"/>
+		<typeAlias type="ytu.icoding.entity.UserWageRecord" alias="UserWageRecord"/>
+		<typeAlias type="ytu.icoding.entity.WageType" alias="WageType"/>
+		<typeAlias type="ytu.icoding.entity.WageStatistics" alias="WageStatistics"/>
+	</typeAliases>
+	
+	
+</configuration>
+	
